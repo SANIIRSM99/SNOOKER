@@ -1,0 +1,725 @@
+body {
+    background-color: #1a202c;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 16px;
+    position: relative;
+}
+
+.container {
+    max-width: 500px;
+    width: 100%;
+}
+
+h1 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.input-form {
+    margin-bottom: 24px;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
+}
+
+input, select {
+    background-color: #2d3748;
+    color: white;
+}
+
+button {
+    background-color: #48bb78;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #38a169;
+}
+
+.exit-btn {
+    background-color: #e53e3e;
+}
+
+.exit-btn:hover {
+    background-color: #c53030;
+}
+
+#game-interface, #records-interface, #ball-details-interface, #game-end-dialog, #toss-container {
+    display: none;
+}
+
+#game-interface.show, #records-interface.show, #ball-details-interface.show, #game-end-dialog.show, #toss-container.show {
+    display: block;
+}
+
+#game-status, #table-number-display, #timer-display, #foul-message, #game-stats, #turn-indicator, #sync-message, #records-table, #ball-details-table, #game-end-message, #toss-result {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+#foul-message {
+    color: #f6e05e;
+}
+
+#force-play-again-btn, #take-turn-btn, #play-again, #close-session, #declare-final, #view-records, #back-to-game, #clear-all-sessions, #start-toss, #view-records-input, #view-ball-details, #back-to-game-from-ball-details, #proceed-after-toss {
+    background-color: #ed8936;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+#force-play-again-btn:hover, #take-turn-btn:hover, #play-again:hover, #close-session:hover, #declare-final:hover, #view-records:hover, #back-to-game:hover, #clear-all-sessions:hover, #start-toss:hover, #view-records-input:hover, #view-ball-details:hover, #back-to-game-from-ball-details:hover, #proceed-after-toss:hover {
+    background-color: #dd6b20;
+}
+
+.view-game-ball-details {
+    background-color: #4299e1;
+    padding: 8px;
+    font-size: 0.9rem;
+}
+
+.view-game-ball-details:hover {
+    background-color: #3182ce;
+}
+
+.player-section {
+    padding: 16px;
+    background-color: #2d3748;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    text-align: center;
+    position: relative;
+}
+
+#player2-section {
+    background-color: #05898fa8
+}
+
+.balls-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.ball-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ball {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-bottom: 4px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ball.red {
+    background: radial-gradient(circle at 30% 30%, #ff9999, #f56565 60%, #d32f2f);
+}
+.ball.red::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.ball.yellow {
+    background: radial-gradient(circle at 30% 30%, #ffee99, #ecc94b 60%, #d69e2e);
+}
+.ball.yellow::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.ball.green {
+    background: radial-gradient(circle at 30% 30%, #80e27e, #48bb78 60%, #2f855a);
+}
+.ball.green::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.ball.brown {
+    background: radial-gradient(circle at 30% 30%, #a9824e, #744210 60%, #5a320c);
+}
+.ball.brown::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.ball.blue {
+    background: radial-gradient(circle at 30% 30%, #90cdf4, #4299e1 60%, #2b6cb0);
+}
+.ball.blue::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.ball.pink {
+    background: radial-gradient(circle at 30% 30%, #f9a8d4, #ed64a6 60%, #d53f8c);
+}
+.ball.pink::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.ball.black {
+    background: radial-gradient(circle at 30% 30%, #666666, #000000 60%, #000000);
+}
+.ball.black::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.action-btn {
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.75rem;
+    border: none;
+    cursor: pointer;
+}
+
+.action-btn.p-btn { background-color: #48bb78; }
+.action-btn.f-btn { background-color: #f56565; }
+.action-btn.m-btn { background-color: #718096; }
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#sync-scores {
+    background-color: #4299e1;
+}
+
+#sync-scores:hover {
+    background-color: #3182ce;
+}
+
+.hidden {
+    display: none;
+}
+
+#records-table, #ball-details-table {
+    overflow-x: auto;
+}
+
+#records-table table, #ball-details-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+
+#records-table th, #records-table td, #ball-details-table th, #ball-details-table td {
+    padding: 8px;
+    border: 1px solid #4a5568;
+    text-align: center;
+}
+
+#records-table th, #ball-details-table th {
+    background-color: #2d3748;
+}
+
+#records-table tr:nth-child(even), #ball-details-table tr:nth-child(even) {
+    background-color: #2d3748;
+}
+
+#records-table tr:nth-child(odd), #ball-details-table tr:nth-child(odd) {
+    background-color: #1a202c;
+}
+
+#game-end-dialog {
+    background-color: #2d3748;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px solid #48bb78;
+    box-shadow: 0 0 15px rgba(72, 187, 120, 0.5);
+    animation: pulse 2s infinite;
+}
+
+#game-end-dialog h2 {
+    color: #48bb78;
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+}
+
+#game-end-message {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+#play-again, #close-session, #declare-final {
+    margin: 8px;
+    padding: 10px 20px;
+    background-color: #48bb78;
+}
+
+#play-again:hover, #close-session:hover, #declare-final:hover {
+    background-color: #38a169;
+}
+
+#confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+footer {
+    text-align: center;
+    margin-top: 24px;
+    color: #a0aec0;
+}
+
+.loser-btn {
+    background-color: #f56565;
+}
+.loser-btn:hover {
+    background-color: #e53e3e;
+}
+.loser-btn:disabled {
+    background-color: #f9a8a8;
+    cursor: not-allowed;
+}
+
+.ball.grey {
+    background-color: #808080;
+}
+
+.champion {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #ffd700;
+    animation: champion-pulse 1.5s infinite;
+}
+
+@keyframes champion-pulse {
+    0% {
+        text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700;
+    }
+    50% {
+        text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+    }
+    100% {
+        text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 15px rgba(72, 187, 120, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(72, 187, 120, 0.7);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(72, 187, 120, 0.5);
+    }
+}
+
+#game-stats {
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: bold;
+}
+
+#game-stats::after {
+    content: '';
+    display: block;
+    margin-top: 8px;
+    border-bottom: 1px solid #48bb78;
+}
+
+.lead-display {
+    color: #ed8936;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-left: 8px;
+    display: inline;
+}
+
+#toss-container {
+    text-align: center;
+    padding: 20px;
+    background-color: #2d3748;
+    border-radius: 8px;
+    border: 2px solid #ed8936;
+    box-shadow: 0 0 15px rgba(237, 137, 54, 0.5);
+}
+
+.coin {
+    width: 100px;
+    height: 100px;
+    margin: 20px auto;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1.5s ease-in-out;
+}
+
+.coin.flip-heads {
+    animation: flip-heads 1.5s ease-in-out forwards;
+}
+
+.coin.flip-tails {
+    animation: flip-tails 1.5s ease-in-out forwards;
+}
+
+.coin-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.heads {
+    background: radial-gradient(circle, #ffd700, #d4a017);
+    color: #333;
+}
+
+.tails {
+    background: radial-gradient(circle, #c0c0c0, #a0a0a0);
+    color: #333;
+    transform: rotateY(180deg);
+}
+
+.toss-result {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ed8936;
+    text-shadow: 0 0 5px rgba(237, 137, 54, 0.5);
+}
+
+@keyframes flip-heads {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(720deg); }
+    100% { transform: rotateY(720deg); }
+}
+
+@keyframes flip-tails {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(900deg); }
+    100% { transform: rotateY(900deg); }
+}
+
+.lead-text {
+    font-size: 12px;
+    font-weight: bold;
+    background: linear-gradient(270deg, #ff0000, #ff9900, #33cc33, #3399ff, #9900cc, #ff0000);
+    background-size: 1200% 1200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow 5s linear infinite;
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.player-dp {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 8px;
+    display: block;
+    border: 2px solid #48bb78;
+}
+
+.last-ball-display {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.last-ball-display::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.action-btn.pf-btn {
+    background-color: #e67e22;
+    color: white;
+    font-weight: bold;
+}
+
+.action-btn.pf-btn:hover {
+    background-color: #d35400;
+}
+
+
+.score-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    padding: 14px 18px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    color: #fff;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Player Card */
+.player-box {
+    width: 40%;
+    text-align: center;
+    padding: 12px 10px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+    position: relative;
+    transition: 0.3s ease;
+}
+
+/* Active Player Glow */
+.player-box.active {
+    box-shadow: 0 0 18px rgba(0,255,150,0.8);
+    border: 1px solid rgba(0,255,150,0.7);
+}
+
+/* Player Name */
+.player-name {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+    text-transform: uppercase;
+}
+
+/* Big Score */
+.player-score {
+    font-size: 40px;
+    font-weight: 800;
+    margin-top: 4px;
+    text-shadow: 0 0 12px rgba(255,255,255,0.25);
+}
+
+/* LEAD Badge */
+.player-lead {
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #00ffae;
+    background: rgba(0,255,174,0.15);
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    box-shadow: 0 0 8px rgba(0,255,174,0.5);
+}
+
+/* VS Center */
+.vs-text {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255,215,0,0.6);
+}
+
+/* Losing Player Dim */
+.player-box.losing {
+    opacity: 0.45;
+    filter: grayscale(40%);
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    .player-score {
+        font-size: 30px;
+    }
+    .player-name {
+        font-size: 13px;
+    }
+}
+
+#game-status {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #48bb78;
+    background: rgba(72, 187, 120, 0.15);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    text-align: center;
+    border: 1px solid rgba(72, 187, 120, 0.4);
+}
+
+
+
+
+.reds-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.red-ball-3d {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff9999, #f56565 60%, #d32f2f);
+    box-shadow: 
+        0 4px 8px rgba(0,0,0,0.6),
+        inset 0 -4px 8px rgba(0,0,0,0.5),
+        inset 6px 6px 10px rgba(255,255,255,0.3);
+    position: relative;
+    transition: all 0.4s ease;
+}
+
+.red-ball-3d::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    box-shadow: inset 0 0 8px rgba(255,255,255,0.8);
+}
+
+.red-ball-3d.pocketed {
+    opacity: 0.3;
+    transform: scale(0.7) rotate(20deg);
+    filter: grayscale(80%);
+}
+
+/* Game Status میں ریڈ بالز دکھانے کے لیے */
+#game-status {
+    text-align: center;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    margin: 12px 0;
+    min-height: 80px;
+}
+
+.status-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffd700;
+}
+
+.color-phase {
+    color: #48bb78;
+    font-size: 1.25rem;
+}
+
+/* چھوٹے 3D ریڈ بالز */
+.remaining-reds {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.red-ball-3d {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ff9999, #e53e3e 60%, #b91c1c);
+    box-shadow: 
+        0 3px 6px rgba(0,0,0,0.7),
+        inset 0 -3px 6px rgba(0,0,0,0.6),
+        inset 4px 4px 8px rgba(255,255,255,0.25);
+    transition: all 0.4s ease;
+}
+
+.red-ball-3d.pocketed {
+    opacity: 0.35;
+    transform: scale(0.75) translateY(4px);
+    filter: grayscale(70%) blur(0.8px);
+    box-shadow: none;
+}
