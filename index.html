@@ -1,243 +1,188 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>SNOOKERS  LIVE DATA WITH CASH</title>
-    
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
-<html lang="ur">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snooker Tables - Manager Monitor</title>
-
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-
-  <style>
-    body { margin:0; padding:20px; background:#0a0a0a; color:#e0e0e0; font-family:Segoe UI, sans-serif; }
-    h1 { text-align:center; color:#ffd700; margin:10px 0 20px; font-size:2.3rem; }
-    #wallet-box {
-      background:#1e3a2e; border:2px solid #4ade80; border-radius:12px;
-      padding:20px; margin:0 auto 30px; max-width:500px; text-align:center;
-      box-shadow:0 6px 20px rgba(74,222,128,0.3);
-    }
-    #wallet-amount { font-size:2.8rem; font-weight:bold; color:#a3ffba; margin:10px 0; }
-    .receive-btn {
-      background:#2a9d8f; color:white; border:none; padding:12px 24px;
-      font-size:1.1rem; border-radius:8px; cursor:pointer; margin-top:12px;
-    }
-    .receive-btn:hover { background:#238c7e; }
-    h2.section-title { text-align:center; margin:25px 0 15px; font-size:1.7rem; padding-bottom:6px; border-bottom:2px solid; }
-    .free-section h2 { color:#90ff9e; border-bottom-color:#4ade80; }
-    .busy-section h2 { color:#ff6b6b; border-bottom-color:#e63946; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; max-width:1800px; margin:0 auto 40px; }
-    .card {
-      background:#181818; border-radius:12px; padding:20px; box-shadow:0 6px 16px rgba(0,0,0,0.7);
-      border:2px solid; position:relative; transition:all 0.2s;
-    }
-    .card:hover { transform:translateY(-5px); box-shadow:0 12px 28px rgba(0,0,0,0.8); }
-    .busy { border-color:#e63946; background:linear-gradient(145deg,#2d0005,#180000); }
-    .free  { border-color:#4ade80; background:linear-gradient(145deg,#0f2e1f,#0a2418); }
-    .cash-box {
-      margin-top:12px; padding:10px; background:rgba(255,255,255,0.08); border-radius:8px;
-      text-align:center; font-size:1.15rem;
-    }
-    .collect-btn {
-      background:#e63946; color:white; border:none; padding:10px 16px;
-      border-radius:6px; cursor:pointer; font-size:1rem; font-weight:bold;
-      margin-top:10px; display:block; width:100%;
-    }
-    .collect-btn:hover { background:#c53039; }
-    .unlock-btn {
-      position:absolute; top:12px; right:12px; background:#e63946; color:white;
-      border:none; padding:6px 12px; border-radius:6px; cursor:pointer;
-      font-size:0.9rem; font-weight:bold;
-    }
-    .unlock-btn:hover { background:#c53039; }
-    .empty-message {
-      grid-column:1/-1; text-align:center; padding:50px 20px; color:#777;
-      font-size:1.4rem; background:#222; border-radius:12px; border:1px dashed #444;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNOOKER POINTS</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
+    <div class="container">
+        <h1>SNOOKER POINTS</h1>
 
-<h1>Snooker Tables - Live Manager Monitor</h1>
+        <div id="input-form">
+            <input type="text" id="player1-name" placeholder="Player 1 Name">
+            <input type="file" id="player1-dp" accept="image/*">
+            <input type="text" id="player2-name" placeholder="Player 2 Name">
+            <input type="file" id="player2-dp" accept="image/*">
+            <select id="table-number">
+                <option value="1">Table 1</option>
+                <option value="2">Table 2</option>
+                <option value="3">Table 3</option>
+                <option value="4">Table 4</option>
+                <option value="5">Table 5</option>
+                <option value="6">Table 6</option>
+                <option value="7">Table 7</option>
+                <option value="8">Table 8</option>
+                <option value="9">Table 9</option>
+                <option value="10">Table 10</option>
+                <option value="11">Table 11</option>
+                <option value="12">Table 12</option>
+                <option value="13">Table 13</option>
+                <option value="14">Table 14</option>
+                <option value="15">Table 15</option>
+            </select>
+            <select id="red-count">
+                <option value="6">6 Reds</option>
+                <option value="10">10 Reds</option>
+            </select>
+            <select id="best-of">
+                <option value="3">Best of 3</option>
+                <option value="5">Best of 5</option>
+                <option value="7">Best of 7</option>
+                <option value="9">Best of 9</option>
+                <option value="11">Best of 11</option>
+            </select>
+            <button id="start-toss">Start Toss</button>
+            <button id="start-game" class="hidden">Start Game</button>
+            <button id="view-records-input">View Records</button>
+            <button id="exit-app-input">Exit</button>
+        </div>
 
-<div id="wallet-box">
-  <div style="font-size:1.3rem; color:#ccc;">کل والٹ (Total Cash Collected)</div>
-  <div id="wallet-amount">Rs. 0</div>
-  <button class="receive-btn" onclick="receiveAllCash()">Receive / Clear Wallet</button>
+        <div id="toss-container">
+            <h2>Coin Toss</h2>
+            <div id="coin" class="coin">
+                <div class="coin-face heads">Heads</div>
+                <div class="coin-face tails">Tails</div>
+            </div>
+            <div id="toss-result" class="toss-result"></div>
+            <button id="proceed-after-toss" class="hidden">Proceed</button>
+        </div>
+
+        <div id="game-interface">
+            <div id="table-number-display">Table 1</div>
+            <div id="timer-display">Total Time: 0s</div>
+            <div id="game-status">
+    <span id="status-text"></span>
+    <div id="remaining-reds-container" class="reds-container"></div>
 </div>
-
-<div class="free-section">
-  <h2 class="section-title">خالی ٹیبلز (Free Tables)</h2>
-  <div class="grid" id="free-tables-grid"></div>
-</div>
-
-<div class="busy-section">
-  <h2 class="section-title">مصروف ٹیبلز (Busy Tables)</h2>
-  <div class="grid" id="busy-tables-grid"></div>
-</div>
-
-<script>
-// ────────────────────────────── Firebase Config ──────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyDjF_POrbldRLFGTYqbhVB7DO2f_PVNIiU",
-  authDomain: "snooker-13eba.firebaseapp.com",
-  databaseURL: "https://snooker-13eba-default-rtdb.firebaseio.com",
-  projectId: "snooker-13eba",
-  storageBucket: "snooker-13eba.firebasestorage.app",
-  messagingSenderId: "798005790037",
-  appId: "1:798005790037:web:70222de563a0803b285bdc",
-  measurementId: "G-ME8ZK3K0RV"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-const TOTAL_TABLES = 15;
-const freeGrid = document.getElementById("free-tables-grid");
-const busyGrid = document.getElementById("busy-tables-grid");
-const walletAmountEl = document.getElementById("wallet-amount");
-
-// والٹ real-time
-db.ref("wallet").on("value", (snap) => {
-  const amount = snap.val() || 0;
-  walletAmountEl.textContent = `Rs. ${amount.toLocaleString()}`;
-});
-
-// ٹیبلز real-time
-db.ref("tables").on("value", (snapshot) => {
-  freeGrid.innerHTML = "";
-  busyGrid.innerHTML = "";
-
-  let freeCount = 0;
-  let busyCount = 0;
-  let knownTables = new Set();
-
-  snapshot.forEach((child) => {
-    const tableNum = parseInt(child.key);
-    knownTables.add(tableNum);
-    const data = child.val() || {};
-
-    const card = createTableCard(tableNum, data);
-
-    if (data.status === "busy") {
-      busyGrid.appendChild(card);
-      busyCount++;
-    } else {
-      freeGrid.appendChild(card);
-      freeCount++;
-    }
-  });
-
-  for (let i = 1; i <= TOTAL_TABLES; i++) {
-    if (!knownTables.has(i)) {
-      const card = createTableCard(i, { status: "free", gamesPlayed: 0 });
-      freeGrid.appendChild(card);
-      freeCount++;
-    }
-  }
-
-  if (freeCount === 0) freeGrid.innerHTML = '<div class="empty-message">کوئی خالی ٹیبل نہیں</div>';
-  if (busyCount === 0) busyGrid.innerHTML = '<div class="empty-message">کوئی مصروف ٹیبل نہیں</div>';
-});
-
-function createTableCard(num, data) {
-  const card = document.createElement("div");
-  card.className = `card ${data.status === "busy" ? "busy" : "free"}`;
-
-  const games = data.gamesPlayed || 0;
-  const cashDue = games * 100;
-
-  let html = `
-    <h2>ٹیبل ${num}</h2>
-    <div class="status">${data.status === "busy" ? "مصروف" : "خالی"}</div>
-    <div class="info-line">کل گیمز: <strong>${games}</strong></div>
-    <div class="cash-box">
-      <div>واجب الادا کیش: <strong>Rs. ${cashDue.toLocaleString()}</strong></div>
+            <div id="foul-message" class="hidden"></div>
+            <div id="game-stats">Total Games: 0 | Player 1 Wins: 0 | Player 2 Wins: 0</div>
+            <div id="turn-indicator">Current Turn: Player 1</div>
+            <div id="sync-message"></div>
+<div class="score-header">
+    <div class="player-box" id="p1-box">
+        <div class="player-name" id="p1-name">Player 1</div>
+        <div class="player-score" id="p1-score-big">0</div>
+        <div class="player-lead" id="player1-lead"></div>
     </div>
-  `;
 
-  if (games > 0) {
-    html += `
-      <button class="collect-btn" onclick="collectCash(${num}, ${games})">
-        Cash Collect (Rs. ${cashDue.toLocaleString()})
-      </button>
-    `;
-  }
+    <div class="vs-text">VS</div>
 
-  if (data.status === "busy") {
-    html += `
-      <button class="unlock-btn" onclick="unlockTable(${num})">
-        Unlock / Free
-      </button>
-    `;
-  }
+    <div class="player-box" id="p2-box">
+        <div class="player-name" id="p2-name">Player 2</div>
+        <div class="player-score" id="p2-score-big">0</div>
+        <div class="player-lead" id="player2-lead"></div>
+    </div>
+</div>
 
-  card.innerHTML = html;
-  return card;
-}
+            <div class="player-section" id="player1-section">
+                <div id="player1-last-ball" class="last-ball-display hidden"></div>
+                <img id="player1-dp-img" class="player-dp hidden" src="" alt="Player 1 DP">
+                <h2 id="player1-title">Player 1</h2>
+                <div id="player1-score">Score: 0</div>
+                <div id="player1-lead" class="lead-display"></div>
+                <div id="player1-balls" class="balls-container"></div>
+                <button id="player1-loser-btn" class="loser-btn">I Am Loser</button>
+            </div>
 
-// Cash Collect → گیمز صفر + والٹ میں شامل
-window.collectCash = function(tableNumber, gamesCount) {
-  if (!confirm(`ٹیبل ${tableNumber} کی تمام ${gamesCount} گیمز کا کیش (Rs. ${gamesCount * 100}) جمع کرنا ہے؟`)) {
-    return;
-  }
+            <div class="player-section" id="player2-section">
+                <div id="player2-last-ball" class="last-ball-display hidden"></div>
+                <img id="player2-dp-img" class="player-dp hidden" src="" alt="Player 2 DP">
+                <h2 id="player2-title">Player 2</h2>
+                <div id="player2-score">Score: 0</div>
+                <div id="player2-lead" class="lead-display"></div>
+                <div id="player2-balls" class="balls-container"></div>
+                <button id="player2-loser-btn" class="loser-btn">I Am Loser</button>
+            </div>
 
-  const tableRef = db.ref(`tables/${tableNumber}`);
+            <button id="force-play-again-btn" class="hidden"></button>
+            <button id="take-turn-btn" class="hidden"></button>
+            <button hidden id="sync-scores">Sync Scores to Server</button>
+            <button id="view-records">View Records</button>
+            <button id="view-ball-details">View Ball Pocket Details</button>
+            <button id="exit-app-game">Exit</button>
+        </div>
 
-  tableRef.transaction((data) => {
-    if (!data) return data;
+        <div id="records-interface">
+            <h2>Game Records</h2>
+            <div id="records-table"></div>
+            <button id="clear-all-sessions">Clear All Table Sessions</button>
+            <button id="back-to-game">Back to Game</button>
+        </div>
 
-    const amountToAdd = (data.gamesPlayed || 0) * 100;
+        <div id="ball-details-interface">
+            <h2>Ball Pocket Details</h2>
+            <div id="ball-details-table"></div>
+            <button id="back-to-game-from-ball-details">Back to Game</button>
+        </div>
 
-    // والٹ میں اضافہ
-    db.ref("wallet").transaction((wallet) => (wallet || 0) + amountToAdd);
+        <div id="game-end-dialog">
+            <h2>Game Over!</h2>
+            <div id="game-end-message"></div>
+            <button id="play-again">Play Again</button>
+            <button id="declare-final">Final</button>
+            <button id="close-session">Close Session</button>
+        </div>
 
-    // ٹیبل کی گیمز صفر
-    data.gamesPlayed = 0;
-
-    return data;
-  }).then(() => {
-    alert(`ٹیبل ${tableNumber} کا کیش جمع ہو گیا اور گیمز صفر ہو گئیں`);
-  }).catch(err => {
-    alert("مسئلہ: " + err.message);
-  });
-};
-
-// Unlock ٹیبل
-window.unlockTable = function(tableNumber) {
-  if (!confirm(`ٹیبل ${tableNumber} کو free کرنا ہے؟`)) return;
-
-  db.ref(`tables/${tableNumber}`).update({
-    status: "free",
-    currentGame: null
-  }).then(() => {
-    alert(`ٹیبل ${tableNumber} free ہو گیا`);
-  }).catch(err => alert("مسئلہ: " + err.message));
-};
-
-// والٹ ریسیو / کلیئر
-window.receiveAllCash = function() {
-  if (!confirm("کیا والٹ کا پورا بیلنس ریسیو کر کے صفر کرنا ہے؟")) return;
-
-  db.ref("wallet").set(0).then(() => {
-    alert("والٹ صفر کر دیا گیا (ریسیوڈ)");
-  }).catch(err => alert("مسئلہ: " + err.message));
-};
-</script>
+        <canvas id="confetti-canvas"></canvas>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+        <footer>
+            Developed by Sani Hashmi | Contact Us +92 311 7323373
+        </footer>
+    </div>
 </body>
-</html>
-    <script  src="./script.js"></script>
-
-  </body>
-  
 </html>
