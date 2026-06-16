@@ -76,7 +76,23 @@
             <select id="red-count">
                 <option value="6">6 Reds</option>
                 <option value="10">10 Reds</option>
+                <option value="century">Century</option>
+                <option value="fifty">Fifty</option>
             </select>
+            <div id="multi-game-options" class="hidden">
+                <select id="multi-player-count">
+                    <option value="2">2 Players</option>
+                    <option value="3">3 Players</option>
+                    <option value="4">4 Players</option>
+                    <option value="5">5 Players</option>
+                    <option value="6">6 Players</option>
+                    <option value="7">7 Players</option>
+                    <option value="8">8 Players</option>
+                    <option value="9">9 Players</option>
+                    <option value="10">10 Players</option>
+                </select>
+                <div id="multi-player-inputs"></div>
+            </div>
             <select id="best-of">
                 <option value="3">Best of 3</option>
                 <option value="5">Best of 5</option>
@@ -166,6 +182,22 @@
             <h2>Ball Pocket Details</h2>
             <div id="ball-details-table"></div>
             <button id="back-to-game-from-ball-details">Back to Game</button>
+        </div>
+
+        <div id="multi-game-interface">
+            <div id="multi-table-display">Table 1</div>
+            <div id="multi-timer-display">Total Time: 0s</div>
+            <div id="multi-game-title"></div>
+            <div id="multi-scoreboard"></div>
+            <div id="multi-turn-indicator"></div>
+            <div id="multi-toss-order"></div>
+            <div id="multi-active-section" class="player-section">
+                <h2 id="multi-active-player-name"></h2>
+                <div id="multi-active-player-score">Score: 0</div>
+                <div id="multi-balls" class="balls-container"></div>
+            </div>
+            <button id="multi-view-ball-details">View Ball Pocket Details</button>
+            <button id="multi-exit-game">Exit</button>
         </div>
 
         <div id="game-end-dialog">
